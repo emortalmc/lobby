@@ -22,7 +22,7 @@ dependencies {
     implementation("com.github.Minestom:Minestom:eb06ba8664")
     implementation("com.github.EmortalMC:TNT:4ef1b53482")
 
-    implementation("dev.emortal.minestom:core:910726b")
+    implementation("dev.emortal.minestom:core:b729d14")
     implementation("net.kyori:adventure-text-minimessage:4.12.0")
 
     implementation("dev.emortal.api:open-match-sdk:1.0.0")
