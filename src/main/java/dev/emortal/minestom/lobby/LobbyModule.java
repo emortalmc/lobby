@@ -72,7 +72,7 @@ public class LobbyModule extends Module {
 
         InstanceContainer instance = im.createInstanceContainer();
         try {
-            instance.setChunkLoader(new TNTLoader(new FileTNTSource(Path.of("run/lobby.tnt"))));
+            instance.setChunkLoader(new TNTLoader(new FileTNTSource(Path.of("lobby.tnt"))));
         } catch (IOException | NBTException e) {
             e.printStackTrace();
         }
