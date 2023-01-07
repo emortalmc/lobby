@@ -23,14 +23,22 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
 
 public class GameModeManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameModeManager.class);
+
+    private static final Set<ServerType> SERVER_TYPES = Arrays.stream(ServerType.values())
+            .filter(serverType -> serverType != ServerType.UNRECOGNIZED)
+            .collect(Collectors.toUnmodifiableSet());
+
     private final @NotNull Inventory compassInventory;
 
     private final @NotNull ConcurrentHashMap<String, Integer> itemMap = new ConcurrentHashMap<>();
@@ -48,19 +56,17 @@ public class GameModeManager {
         GrpcStubCollection.getPlayerTrackerService().ifPresent(playerTracker -> {
             MinecraftServer.getSchedulerManager().buildTask(() -> {
 
-                var future = playerTracker.getServerTypeSPlayerCount(
+                var future = playerTracker.getServerTypesPlayerCount(
                         PlayerTrackerProto.ServerTypesRequest.newBuilder()
-                                .addAllServerTypes(List.of(ServerType.values()))
+                                .addAllServerTypes(SERVER_TYPES)
                                 .build()
                 );
 
                 Futures.addCallback(future, FunctionalFutureCallback.create(response -> {
                     for (Map.Entry<String, Integer> entry : response.getPlayerCountsMap().entrySet()) {
-                        refreshPlayerCount(entry.getKey(), entry.getValue());
+                        this.refreshPlayerCount(entry.getKey(), entry.getValue());
                     }
-                }, throwable -> {
-                    LOGGER.error("Failed to get player counts", throwable);
-                }), ForkJoinPool.commonPool());
+                }, throwable -> LOGGER.error("Failed to get player counts", throwable)), ForkJoinPool.commonPool());
             }).repeat(TaskSchedule.seconds(5)).schedule();
         });
     }
@@ -82,17 +88,17 @@ public class GameModeManager {
                 })
                 .build();
 
-        itemMap.put(serverType.name(), slot);
+        this.itemMap.put(serverType.name(), slot);
 
-        compassInventory.setItemStack(slot, item);
+        this.compassInventory.setItemStack(slot, item);
     }
 
     private void refreshPlayerCount(String serverType, int newPlayerCount) {
-        MultilineHologram hologram = npcMap.get(serverType).getHologram();
+        MultilineHologram hologram = this.npcMap.get(serverType).getHologram();
         hologram.setLine(hologram.size() - 1, Component.text(newPlayerCount + " playing", NamedTextColor.GRAY));
 
-        int slot = itemMap.get(serverType);
-        ItemStack item = compassInventory.getItemStack(slot);
+        int slot = this.itemMap.get(serverType);
+        ItemStack item = this.compassInventory.getItemStack(slot);
         List<Component> newLores = item.getLore();
         newLores.set(
                 newLores.size() - 1,
@@ -103,14 +109,14 @@ public class GameModeManager {
                         .build()
                         .decoration(TextDecoration.ITALIC, false)
         );
-        compassInventory.setItemStack(slot, item.withLore(newLores));
+        this.compassInventory.setItemStack(slot, item.withLore(newLores));
     }
 
     public @NotNull Collection<PacketNPC> getNpcs() {
-        return npcMap.values();
+        return this.npcMap.values();
     }
 
-    public Inventory getCompassInventory() {
-        return compassInventory;
+    public @NotNull Inventory getCompassInventory() {
+        return this.compassInventory;
     }
 }

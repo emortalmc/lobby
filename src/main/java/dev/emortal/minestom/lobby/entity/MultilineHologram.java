@@ -22,7 +22,7 @@ public class MultilineHologram {
 
     public void setInstance(@NotNull Instance instance, @NotNull Pos position) {
         int i = 0;
-        for (Component name : names) {
+        for (Component name : this.names) {
             Entity entity = new NoPhysicsEntity(EntityType.ARMOR_STAND);
             ArmorStandMeta meta = (ArmorStandMeta) entity.getEntityMeta();
             meta.setNotifyAboutChanges(false);
@@ -48,11 +48,11 @@ public class MultilineHologram {
     }
 
     public void setLine(int index, Component newName) {
-        names.set(index, newName);
-        entities.get(index).getEntityMeta().setCustomName(newName);
+        this.names.set(index, newName);
+        this.entities.get(index).getEntityMeta().setCustomName(newName);
     }
     public int size() {
-        return names.size();
+        return this.names.size();
     }
 
 }
