@@ -37,6 +37,8 @@ public class MultilineHologram {
 
             entity.setInstance(instance, position.add(0.0, 0.5 + (0.30 * (names.size() - i)), 0.0));
 
+            entities.add(entity);
+
             i++;
         }
     }
@@ -48,8 +50,8 @@ public class MultilineHologram {
     }
 
     public void setLine(int index, Component newName) {
-        this.names.set(index, newName);
-        this.entities.get(index).getEntityMeta().setCustomName(newName);
+        if (this.names.size() > index) this.names.set(index, newName);
+        if (this.entities.size() > index) this.entities.get(index).getEntityMeta().setCustomName(newName);
     }
     public int size() {
         return this.names.size();
