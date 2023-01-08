@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -94,22 +95,28 @@ public class GameModeManager {
     }
 
     private void refreshPlayerCount(String serverType, int newPlayerCount) {
-        MultilineHologram hologram = this.npcMap.get(serverType).getHologram();
-        hologram.setLine(hologram.size() - 1, Component.text(newPlayerCount + " playing", NamedTextColor.GRAY));
+        PacketNPC npc = this.npcMap.get(serverType);
+        if (npc != null) {
+            MultilineHologram hologram = npc.getHologram();
+            hologram.setLine(hologram.size() - 1, Component.text(newPlayerCount + " playing", NamedTextColor.GRAY));
+        }
 
-        int slot = this.itemMap.get(serverType);
-        ItemStack item = this.compassInventory.getItemStack(slot);
-        List<Component> newLores = item.getLore();
-        newLores.set(
-                newLores.size() - 1,
-                Component.text()
-                        .append(Component.text("● ", NamedTextColor.GREEN))
-                        .append(Component.text(newPlayerCount, NamedTextColor.GREEN, TextDecoration.BOLD))
-                        .append(Component.text(" playing", NamedTextColor.GREEN))
-                        .build()
-                        .decoration(TextDecoration.ITALIC, false)
-        );
-        this.compassInventory.setItemStack(slot, item.withLore(newLores));
+        Integer slot = this.itemMap.get(serverType);
+        if (slot != null) {
+            ItemStack item = this.compassInventory.getItemStack(slot);
+            List<Component> newLore = new ArrayList<>(item.getLore());
+            newLore.set(
+                    newLore.size() - 1,
+                    Component.text()
+                            .append(Component.text("● ", NamedTextColor.GREEN))
+                            .append(Component.text(newPlayerCount, NamedTextColor.GREEN, TextDecoration.BOLD))
+                            .append(Component.text(" playing", NamedTextColor.GREEN))
+                            .build()
+                            .decoration(TextDecoration.ITALIC, false)
+            );
+
+            this.compassInventory.setItemStack(slot, item.withLore(newLore));
+        }
     }
 
     public @NotNull Collection<PacketNPC> getNpcs() {

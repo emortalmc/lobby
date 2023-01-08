@@ -12,6 +12,8 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithBlockEvent;
+import net.minestom.server.event.player.PlayerBlockBreakEvent;
+import net.minestom.server.event.player.PlayerBlockPlaceEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.batch.AbsoluteBlockBatch;
@@ -21,6 +23,7 @@ import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.server.play.ExplosionPacket;
 import net.minestom.server.timer.TaskSchedule;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,6 +56,7 @@ public class LobbyEvents {
                 fireball.setVelocity(initialVelocity);
 
                 fireball.setInstance(e.getInstance(), e.getPlayer().getPosition().add(0, e.getPlayer().getEyeHeight(), 0));
+                fireball.scheduleRemove(10, ChronoUnit.SECONDS);
             }
 
             if (e.getPlayer().getItemInMainHand().material() == Material.COMPASS) {
@@ -119,6 +123,9 @@ public class LobbyEvents {
                 e.getEntity().remove();
             }
         });
+
+        eventNode.addListener(PlayerBlockBreakEvent.class, e -> e.setCancelled(true))
+                .addListener(PlayerBlockPlaceEvent.class, e -> e.setCancelled(true));
     }
 
 }
