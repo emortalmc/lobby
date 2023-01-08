@@ -7,13 +7,11 @@ import dev.emortal.minestom.core.module.Module;
 import dev.emortal.minestom.core.module.ModuleData;
 import dev.emortal.minestom.core.module.ModuleEnvironment;
 import dev.emortal.minestom.lobby.entity.MultilineHologram;
+import dev.emortal.minestom.lobby.matchmaking.MatchmakingManager;
 import dev.emortal.minestom.lobby.npc.GameListingJson;
 import dev.emortal.minestom.lobby.npc.GameModeManager;
 import dev.emortal.tnt.TNTLoader;
 import dev.emortal.tnt.source.FileTNTSource;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -21,7 +19,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.item.ItemDropEvent;
@@ -33,8 +30,6 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.item.Material;
-import net.minestom.server.sound.SoundEvent;
-import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 import org.jglrxavpok.hephaistos.nbt.NBTException;
 import org.slf4j.Logger;
@@ -51,7 +46,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 @ModuleData(name = "lobby", required = true)
 public class LobbyModule extends Module {
@@ -96,8 +90,11 @@ public class LobbyModule extends Module {
             }
         });
 
+        MatchmakingManager matchmakingManager = new MatchmakingManager();
         this.eventNode.addListener(PlayerStartSneakingEvent.class, e -> {
-            mockGameJoin(e.getPlayer());
+            matchmakingManager.queuePlayer(e.getPlayer(), "game.parkour_tag", () -> {
+                // do nothing
+            });
         });
 
         this.eventNode.addListener(ItemDropEvent.class, e -> e.setCancelled(true));
@@ -116,74 +113,11 @@ public class LobbyModule extends Module {
 
     }
 
-
-    private void mockGameJoin(Player player) {
-
-        BossBar bossBar = BossBar.bossBar(Component.empty(), 0f, BossBar.Color.WHITE, BossBar.Overlay.PROGRESS);
-
-        player.showBossBar(bossBar);
-        player.playSound(Sound.sound(SoundEvent.BLOCK_BEACON_ACTIVATE, Sound.Source.MASTER, 1f, 1f));
-
-        List<String> spinner = List.of("▘", "▖");
-
-
-        player.scheduler().submitTask(new Supplier() {
-            int i = 0;
-
-            @Override
-            public Object get() {
-                if (i == 170) {
-                    player.playSound(Sound.sound(SoundEvent.ENTITY_PLAYER_LEVELUP, Sound.Source.MASTER, 1f, 1.5f));
-                    player.scheduler().submitTask(new Supplier<>() {
-                        int i = 0;
-
-                        @Override
-                        public TaskSchedule get() {
-                            if (i == 20*10) {
-                                player.playSound(Sound.sound(SoundEvent.BLOCK_BEACON_POWER_SELECT, Sound.Source.MASTER, 1f, 1.5f));
-
-                                bossBar.name(Component.text("Teleporting...", NamedTextColor.GREEN));
-
-                                player.scheduler().buildTask(() -> {
-                                    player.hideBossBar(bossBar);
-                                }).delay(TaskSchedule.seconds(2)).schedule();
-
-                                return TaskSchedule.stop();
-                            }
-
-                            if (i % 20 == 0) {
-                                player.playSound(Sound.sound(Key.key("battle.showdown.count" + ((i / 20) % 2 == 0 ? 1 : 2)), Sound.Source.MASTER, 1f, 1f));
-                            }
-
-                            bossBar.name(MINI_MESSAGE.deserialize("<gradient:#ff9eed:#ff956b:" + (((i * 0.05) % 2) - 1.0) + ">Teleporting to <gradient:aqua:blue><bold>Block Sumo</bold></gradient> in <white>" + (10 - (i / 20)) + "</white> seconds!"));
-
-                            i++;
-                            return TaskSchedule.nextTick();
-                        }
-                    });
-
-                    return TaskSchedule.stop();
-                }
-
-                String spinnerChar = spinner.get((int) (Math.floor(i / 10.0) % spinner.size()));
-                bossBar.name(MINI_MESSAGE.deserialize(spinnerChar + " <gradient:gold:white:" + (((i * 0.05) % 2) - 1.0) + ">In queue for <gradient:aqua:blue><bold>Block Sumo<reset> " + spinnerChar));
-
-                if (i % (20 * 10) == 0) {
-                    player.playSound(Sound.sound(SoundEvent.BLOCK_BEACON_AMBIENT, Sound.Source.MASTER, 0.75f, 1f));
-                }
-
-                i++;
-
-                return TaskSchedule.nextTick();
-            }
-        });
-    }
-
-
     private void createGames(GameModeManager gameModeManager, Instance instance) {
         InputStream is = getClass().getClassLoader().getResourceAsStream("games.json");
         Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
-        Type type = new TypeToken<HashMap<String, GameListingJson>>(){}.getType();
+        Type type = new TypeToken<HashMap<String, GameListingJson>>() {
+        }.getType();
         Map<String, GameListingJson> parsed = GSON.fromJson(reader, type);
 
         LOGGER.info(parsed.toString());
@@ -245,8 +179,5 @@ public class LobbyModule extends Module {
                 i++;
             }
         }
-
-
-
     }
 }

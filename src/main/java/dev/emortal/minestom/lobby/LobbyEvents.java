@@ -96,13 +96,13 @@ public class LobbyEvents {
                 batch.apply(e.getInstance(), null);
 
                 e.getInstance().scheduler().submitTask(new Supplier<>() {
-                    boolean firstRun = true;
-                    int i = 0;
+                    private boolean firstRun = true;
+                    private int i = 0;
 
                     @Override
                     public TaskSchedule get() {
-                        if (firstRun) {
-                            firstRun = false;
+                        if (this.firstRun) {
+                            this.firstRun = false;
                             return TaskSchedule.seconds(3);
                         }
 

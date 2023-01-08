@@ -23,10 +23,11 @@ dependencies {
     implementation("com.github.EmortalMC:TNT:4ef1b53482")
 
     implementation("dev.emortal.minestom:core:6d09fe5")
-//    implementation("dev.emortal.minestom:core:local")
     implementation("net.kyori:adventure-text-minimessage:4.12.0")
 
-    implementation("dev.emortal.api:open-match-sdk:1.0.0")
+//    implementation("dev.emortal.minestom:core:local")
+
+    implementation("dev.emortal.api:kurushimi-sdk:e0ddc5a")
 }
 
 tasks {
