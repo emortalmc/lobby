@@ -8,6 +8,7 @@ import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -35,13 +36,15 @@ public class LobbyEvents {
 
     public static void registerEvents(EventNode<Event> eventNode, GameModeManager gmm) {
         eventNode.addListener(PlayerSpawnEvent.class, e -> {
-            e.getPlayer().getInventory().setItemStack(0, ItemStack.of(Material.FIRE_CHARGE));
-            e.getPlayer().getInventory().setItemStack(4, ItemStack.of(Material.COMPASS));
+            Player player = e.getPlayer();
+            player.setGameMode(GameMode.ADVENTURE);
+            player.getInventory().setItemStack(0, ItemStack.of(Material.FIRE_CHARGE));
+            player.getInventory().setItemStack(4, ItemStack.of(Material.COMPASS));
 
-            e.getPlayer().setAllowFlying(true);
+            player.setAllowFlying(true);
 
             for (PacketNPC npc : gmm.getNpcs()) {
-                npc.addViewer(e.getPlayer());
+                npc.addViewer(player);
             }
         });
 
