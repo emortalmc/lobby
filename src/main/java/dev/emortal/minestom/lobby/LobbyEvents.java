@@ -1,8 +1,8 @@
 package dev.emortal.minestom.lobby;
 
-import dev.emortal.minestom.lobby.entity.NoDragProjectile;
-import dev.emortal.minestom.lobby.npc.GameModeManager;
-import dev.emortal.minestom.lobby.npc.PacketNPC;
+import dev.emortal.minestom.lobby.util.entity.NoDragProjectile;
+import dev.emortal.minestom.lobby.game.GameModeManager;
+import dev.emortal.minestom.lobby.util.npc.PacketNPC;
 import dev.emortal.minestom.lobby.util.SphereUtil;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;

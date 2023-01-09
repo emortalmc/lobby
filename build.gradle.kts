@@ -19,6 +19,9 @@ repositories {
 }
 
 dependencies {
+    // Used for utils package, parsing protobufs from json
+    implementation("com.google.protobuf:protobuf-java-util:3.21.12")
+
     implementation("com.github.Minestom:Minestom:eb06ba8664")
     implementation("com.github.EmortalMC:TNT:4ef1b53482")
 

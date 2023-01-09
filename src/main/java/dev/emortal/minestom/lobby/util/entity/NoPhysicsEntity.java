@@ -1,4 +1,4 @@
-package dev.emortal.minestom.lobby.entity;
+package dev.emortal.minestom.lobby.util.entity;
 
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
@@ -10,8 +10,8 @@ public class NoPhysicsEntity extends Entity {
     public NoPhysicsEntity(@NotNull EntityType entityType) {
         super(entityType);
 
-        hasPhysics = false;
-        setNoGravity(true);
+        this.hasPhysics = false;
+        this.setNoGravity(true);
     }
 
     @Override

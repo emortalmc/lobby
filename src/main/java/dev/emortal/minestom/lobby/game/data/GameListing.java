@@ -1,34 +1,32 @@
-package dev.emortal.minestom.lobby.npc;
+package dev.emortal.minestom.lobby.game.data;
 
-import dev.emortal.minestom.lobby.matchmaking.QueueType;
+import dev.emortal.api.kurushimi.SearchFields;
+import net.minestom.server.entity.PlayerSkin;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
-public class GameListingJson {
+public class GameListing {
     public String[] description;
     public boolean itemVisible;
     public String item;
     public int slot;
-    public boolean npcVisible;
     public String npcEntityType;
     public String[] npcTitles;
-    public String npcSkinValue;
-    public String npcSkinSignature;
-    public QueueType queueType;
+    public @Nullable PlayerSkin skin;
+    public SearchFields searchFields;
 
     @Override
     public String toString() {
-        return "GameListingJson{" +
+        return "GameListing{" +
                 "description=" + Arrays.toString(this.description) +
                 ", itemVisible=" + this.itemVisible +
                 ", item='" + this.item + '\'' +
                 ", slot=" + this.slot +
-                ", npcVisible=" + this.npcVisible +
                 ", npcEntityType='" + this.npcEntityType + '\'' +
                 ", npcTitles=" + Arrays.toString(this.npcTitles) +
-                ", npcSkinValue='" + this.npcSkinValue + '\'' +
-                ", npcSkinSignature='" + this.npcSkinSignature + '\'' +
-                ", queueType=" + this.queueType +
+                ", npcSkinValue='" + this.skin + '\'' +
+                ", searchFields=" + this.searchFields +
                 '}';
     }
 }

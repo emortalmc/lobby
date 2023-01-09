@@ -51,7 +51,7 @@ public class MatchmakingManager {
         });
     }
 
-    public void queuePlayer(Player player, String game, Runnable failureRunnable) {
+    public void queuePlayer(Player player, SearchFields searchFields, Runnable failureRunnable) {
         if (this.matchmakingService == null || this.matchmakingBlockingService == null) {
             LOGGER.warn("Not queueing player {} as the matchmaker is not available", player.getUuid());
             return;
@@ -63,10 +63,10 @@ public class MatchmakingManager {
                 .setTicket(
                         Ticket.newBuilder()
                                 .setPlayerId(player.getUuid().toString())
-                                .setSearchFields(
-                                        SearchFields.newBuilder().addTags(game)
-                                )
+                                .setSearchFields(searchFields)
                 ).build());
+
+        String game = searchFields.getTagsList().stream().filter(tag -> tag.startsWith("game.")).findFirst().orElse("unknown");
 
         Futures.addCallback(createTicketFuture, FunctionalFutureCallback.create(
                 ticket -> {
@@ -107,5 +107,9 @@ public class MatchmakingManager {
                     // todo handle
                 }
         ), ForkJoinPool.commonPool());
+    }
+
+    public @Nullable MatchmakingSession getCurrentSession(Player player) {
+        return this.matchmakingSessions.get(player);
     }
 }

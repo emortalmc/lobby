@@ -27,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,7 +42,7 @@ public class MatchmakingSession {
             .lore(Component.empty(), Component.text("Right-click to leave the queue", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false))
             .build();
 
-    private static final @NotNull List<Character> SPINNER = List.of('▘', '▖');
+    private static final char[] SPINNER = {'▘', '▖'};
     private static final @NotNull String IN_QUEUE = "<spinner> <gradient:gold:white:%s>In Queue For <gradient:aqua:blue><bold><game><reset> <spinner>";
     private static final @NotNull String COUNTDOWN = "<gradient:#ff9eed:#ff956b:%s>Teleporting to <gradient:aqua:blue><bold><game></bold></gradient> in <white><time></white> seconds!";
     private static final @NotNull String TELEPORTING = "<green>Teleporting to <gradient:aqua:blue><bold><game></bold></gradient>...";
@@ -187,7 +186,7 @@ public class MatchmakingSession {
 
     private char getSpinnerChar() {
         int tick = this.ticksAlive.get();
-        return SPINNER.get((int) (Math.floor(tick / 10.0) % SPINNER.size()));
+        return SPINNER[((int) (Math.floor(tick / 10.0) % SPINNER.length))];
     }
 
     private String parseGameName(String game) {
@@ -197,6 +196,11 @@ public class MatchmakingSession {
         return switch (game) {
             case "block_sumo" -> "Block Sumo";
             case "parkour_tag" -> "Parkour Tag";
+            case "lazer_tag" -> "Lazer Tag";
+            case "marathon" -> "Marathon";
+            case "holey_moley" -> "Holey Moley";
+            case "battle" -> "Battle";
+            case "minesweeper" -> "Minesweeper";
             default -> game;
         };
     }
@@ -209,5 +213,9 @@ public class MatchmakingSession {
 
     public @NotNull Ticket getTicket() {
         return this.ticket;
+    }
+
+    public @NotNull String getGame() {
+        return game;
     }
 }

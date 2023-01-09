@@ -1,4 +1,4 @@
-package dev.emortal.minestom.lobby.entity;
+package dev.emortal.minestom.lobby.util.entity;
 
 import net.kyori.adventure.text.Component;
 import net.minestom.server.coordinate.Pos;
@@ -16,11 +16,9 @@ public class MultilineHologram {
 
     private @NotNull List<Component> names;
 
-    public MultilineHologram(@NotNull List<Component> names) {
+    public MultilineHologram(@NotNull List<Component> names, @NotNull Instance instance, @NotNull Pos pos) {
         this.names = names;
-    }
 
-    public void setInstance(@NotNull Instance instance, @NotNull Pos position) {
         int i = 0;
         for (Component name : this.names) {
             Entity entity = new NoPhysicsEntity(EntityType.ARMOR_STAND);
@@ -35,16 +33,16 @@ public class MultilineHologram {
             meta.setCustomName(name);
             meta.setNotifyAboutChanges(true);
 
-            entity.setInstance(instance, position.add(0.0, 0.5 + (0.30 * (names.size() - i)), 0.0));
+            entity.setInstance(instance, pos.add(0.0, 0.5 + (0.25 * (names.size() - i)), 0.0));
 
-            entities.add(entity);
+            this.entities.add(entity);
 
             i++;
         }
     }
 
     public void remove() {
-        for (Entity entity : entities) {
+        for (Entity entity : this.entities) {
             entity.remove();
         }
     }
@@ -57,4 +55,11 @@ public class MultilineHologram {
         return this.names.size();
     }
 
+    @Override
+    public String toString() {
+        return "MultilineHologram{" +
+                "entities=" + this.entities +
+                ", names=" + this.names +
+                '}';
+    }
 }
