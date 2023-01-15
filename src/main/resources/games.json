@@ -75,7 +75,7 @@
       ]
     }
   },
-  "LAZER_TAG": {
+  "LAZERTAG": {
     "description": [
       "<gray>Battle it out with weird and wacky guns.",
       "<gray>The first player to 25 kills wins!"
@@ -97,7 +97,7 @@
     },
     "searchFields": {
       "tags": [
-        "game.lazer_tag"
+        "game.lazertag"
       ]
     }
   },
@@ -127,7 +127,7 @@
       ]
     }
   },
-  "PARKOUR_TAG": {
+  "PARKOURTAG": {
     "description": [
       "<gray>Chase the hiders or flee from seekers",
       "<gray>before the game ends!"
@@ -149,7 +149,7 @@
     },
     "searchFields": {
       "tags": [
-        "game.parkour_tag"
+        "game.parkourtag"
       ]
     }
   },

@@ -195,8 +195,8 @@ public class MatchmakingSession {
         // block_sumo
         return switch (game) {
             case "block_sumo" -> "Block Sumo";
-            case "parkour_tag" -> "Parkour Tag";
-            case "lazer_tag" -> "Lazer Tag";
+            case "parkourtag" -> "Parkour Tag";
+            case "lazertag" -> "Lazer Tag";
             case "marathon" -> "Marathon";
             case "holey_moley" -> "Holey Moley";
             case "battle" -> "Battle";

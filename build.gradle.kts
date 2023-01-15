@@ -22,15 +22,16 @@ dependencies {
     // Used for utils package, parsing protobufs from json
     implementation("com.google.protobuf:protobuf-java-util:3.21.12")
 
-    implementation("com.github.Minestom:Minestom:eb06ba8664")
+//    implementation("com.github.Minestom:Minestom:eb06ba8664")
     implementation("com.github.EmortalMC:TNT:4ef1b53482")
 
-    implementation("dev.emortal.minestom:core:6d09fe5")
+//    implementation("dev.emortal.minestom:core:local")
+    implementation("dev.emortal.minestom:core:b875988")
     implementation("net.kyori:adventure-text-minimessage:4.12.0")
 
-//    implementation("dev.emortal.minestom:core:local")
-
-    implementation("dev.emortal.api:kurushimi-sdk:e0ddc5a")
+    implementation("dev.emortal.api:kurushimi-sdk:2ae9dd3") {
+        exclude(group = "dev.emortal.api", module = "grpc-sdk")
+    }
 }
 
 tasks {

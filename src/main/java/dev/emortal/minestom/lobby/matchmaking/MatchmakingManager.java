@@ -4,14 +4,13 @@ import com.google.common.util.concurrent.Futures;
 import dev.emortal.api.kurushimi.CreateTicketRequest;
 import dev.emortal.api.kurushimi.DeleteTicketRequest;
 import dev.emortal.api.kurushimi.FrontendGrpc;
+import dev.emortal.api.kurushimi.KurushimiStubCollection;
 import dev.emortal.api.kurushimi.SearchFields;
 import dev.emortal.api.kurushimi.Ticket;
 import dev.emortal.api.kurushimi.WatchCountdownRequest;
 import dev.emortal.api.utils.callback.FunctionalFutureCallback;
 import dev.emortal.api.utils.callback.FunctionalStreamObserver;
 import dev.emortal.minestom.core.Environment;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
@@ -30,21 +29,13 @@ public class MatchmakingManager {
 
     private final @NotNull Map<Player, MatchmakingSession> matchmakingSessions = new ConcurrentHashMap<>();
 
-    private final @Nullable FrontendGrpc.FrontendFutureStub matchmakingService;
-    private final @Nullable FrontendGrpc.FrontendStub matchmakingBlockingService;
+    private final @Nullable FrontendGrpc.FrontendFutureStub matchmakingService = KurushimiStubCollection.getFutureStub().orElse(null);
+    private final @Nullable FrontendGrpc.FrontendStub matchmakingBlockingService = KurushimiStubCollection.getStub().orElse(null);
 
     public MatchmakingManager() {
         if (!Environment.isProduction()) {
             LOGGER.info("Matchmaking not enabled as server is running in development.");
         }
-
-        ManagedChannel frontendChannel = ManagedChannelBuilder.forAddress("matchmaker", 9090)
-                .defaultLoadBalancingPolicy("round_robin")
-                .usePlaintext()
-                .build();
-
-        this.matchmakingService = FrontendGrpc.newFutureStub(frontendChannel);
-        this.matchmakingBlockingService = FrontendGrpc.newStub(frontendChannel);
 
         MinecraftServer.getGlobalEventHandler().addListener(PlayerDisconnectEvent.class, event -> {
             if (this.matchmakingSessions.containsKey(event.getPlayer())) this.cancelPlayerQueue(event.getPlayer());
