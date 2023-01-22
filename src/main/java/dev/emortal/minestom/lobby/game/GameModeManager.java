@@ -206,7 +206,10 @@ public class GameModeManager {
             player.sendMessage(Component.text("You are already in queue for %s!".formatted(currentSession.getGame()), NamedTextColor.RED));
             return;
         }
-        this.matchmakingManager.queuePlayer(player, this.gameListings.get(serverType).searchFields, () -> player.sendMessage("Failed to queue!"));
+
+        // Use acquirable to prevent spam clicking/illegal packet spamming from causing issues
+        player.getAcquirable().async(entity ->
+                this.matchmakingManager.queuePlayer((Player) entity, this.gameListings.get(serverType).searchFields, () -> player.sendMessage("Failed to queue!")));
     }
 
     private void refreshPlayerCount(ServerType serverType, int newPlayerCount) {
