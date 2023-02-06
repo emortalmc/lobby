@@ -26,7 +26,7 @@ dependencies {
     implementation("com.github.EmortalMC:TNT:4ef1b53482")
 
 //    implementation("dev.emortal.minestom:core:local")
-    implementation("dev.emortal.minestom:core:b875988")
+    implementation("dev.emortal.minestom:core:6c4aac9")
     implementation("net.kyori:adventure-text-minimessage:4.12.0")
 
     implementation("dev.emortal.api:kurushimi-sdk:2ae9dd3") {

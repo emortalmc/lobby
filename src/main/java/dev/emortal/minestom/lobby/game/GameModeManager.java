@@ -4,9 +4,9 @@ import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.Futures;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dev.emortal.api.grpc.playertracker.PlayerTrackerProto;
 import dev.emortal.api.kurushimi.SearchFields;
-import dev.emortal.api.model.ServerType;
-import dev.emortal.api.service.PlayerTrackerProto;
+import dev.emortal.api.model.common.ServerType;
 import dev.emortal.api.utils.GrpcStubCollection;
 import dev.emortal.api.utils.callback.FunctionalFutureCallback;
 import dev.emortal.minestom.lobby.game.data.GameListing;
@@ -94,14 +94,15 @@ public class GameModeManager {
             MinecraftServer.getSchedulerManager().buildTask(() -> {
 
                 var future = playerTracker.getServerTypesPlayerCount(
-                        PlayerTrackerProto.ServerTypesRequest.newBuilder()
+                        PlayerTrackerProto.GetServerTypesPlayerCountRequest.newBuilder()
                                 .addAllServerTypes(SERVER_TYPES)
                                 .build()
                 );
 
                 Futures.addCallback(future, FunctionalFutureCallback.create(response -> {
-                    for (Map.Entry<String, Integer> entry : response.getPlayerCountsMap().entrySet()) {
-                        this.refreshPlayerCount(ServerType.valueOf(entry.getKey()), entry.getValue());
+                    for (Map.Entry<Integer, Integer> entry : response.getPlayerCountsMap().entrySet()) {
+                        ServerType serverType = ServerType.forNumber(entry.getKey());
+                        this.refreshPlayerCount(serverType, entry.getValue());
                     }
                 }, throwable -> LOGGER.error("Failed to get player counts", throwable)), ForkJoinPool.commonPool());
             }).repeat(TaskSchedule.seconds(5)).schedule();
@@ -138,8 +139,7 @@ public class GameModeManager {
     private @NotNull Map<ServerType, GameListing> parseGameListings() {
         InputStream is = getClass().getClassLoader().getResourceAsStream("games.json");
         Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
-        Type type = new TypeToken<HashMap<ServerType, GameListing>>() {
-        }.getType();
+        Type type = new TypeToken<HashMap<ServerType, GameListing>>(){}.getType();
         Map<ServerType, GameListing> parsed = GSON.fromJson(reader, type);
         if (parsed == null) throw new IllegalStateException("Failed to parse games.json");
         return parsed;

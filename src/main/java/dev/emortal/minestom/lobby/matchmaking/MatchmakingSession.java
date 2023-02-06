@@ -153,7 +153,7 @@ public class MatchmakingSession {
      * The ticket is already deleted at this point, so it is safe to destroy.
      */
     public void destroy() {
-        // todo test and PROFILE this is everything that needs to be cleaned up
+        // TODO: test and PROFILE this is everything that needs to be cleaned up
         this.tickTask.cancel();
         if (this.teleportTask != null) this.teleportTask.cancel();
         this.player.hideBossBar(this.bossBar);
